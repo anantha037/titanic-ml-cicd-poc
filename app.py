@@ -4,6 +4,9 @@ import joblib
 import numpy as np
 import os
 import logging
+import time
+from fastapi.responses import Response
+from prometheus_client import Counter, Histogram, generate_latest
 
 
 # LOGGING SETUP
@@ -20,6 +23,19 @@ MODEL_PATH = f"models/model_{MODEL_VERSION}.joblib"
 logger.info(f"Loading model version: {MODEL_VERSION}")
 
 model = joblib.load(MODEL_PATH)
+
+
+# PROMETHEUS METRICS
+REQUEST_COUNT = Counter(
+    "titanic_requests_total",
+    "Total prediction requests"
+)
+
+REQUEST_LATENCY = Histogram(
+    "titanic_prediction_latency_seconds",
+    "Prediction latency in seconds"
+)
+
 
 
 # FASTAPI APP
@@ -47,8 +63,11 @@ def home():
 
 @app.post("/predict")
 def predict(data: TitanicInput):
-    
-    logger.info(f"Prediction request received")
+
+    start_time = time.time()
+    REQUEST_COUNT.inc()
+
+    logger.info("Prediction request received")
 
     features = np.array([[
         data.Pclass,
@@ -64,4 +83,11 @@ def predict(data: TitanicInput):
 
     logger.info(f"Prediction result: {prediction}")
 
+    REQUEST_LATENCY.observe(time.time() - start_time)
+
     return {"prediction": int(prediction)}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type="text/plain")
