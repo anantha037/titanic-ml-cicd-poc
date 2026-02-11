@@ -1,0 +1,36 @@
+name: Titanic ML CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      MODEL_VERSION: v${{ github.run_number }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Train Titanic Model
+        run: |
+          python train.py $MODEL_VERSION
+
+      - name: Validate Deployment
+        env:
+          MODEL_VERSION: ${{ env.MODEL_VERSION }}
+        run: |
+          uvicorn app:app --host 127.0.0.1 --port 8000 &
+          sleep 10
