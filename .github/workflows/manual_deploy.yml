@@ -1,0 +1,28 @@
+name: Manual Model Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_version:
+        description: "Model version to deploy (example: v2)"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      MODEL_VERSION: ${{ github.event.inputs.model_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - run: pip install -r requirements.txt
+
+      - run: |
+          uvicorn app:app --host 127.0.0.1 --port 8000 &
+          sleep 10
