@@ -1,4 +1,7 @@
+Python | FastAPI | CI/CD | ML Deployment
+
 # Titanic ML CI/CD Deployment POC
+
 
 This repository demonstrates a minimal Proof-of-Concept (POC) for
 deploying a Machine Learning model using CI/CD practices.\
