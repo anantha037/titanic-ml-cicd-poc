@@ -26,7 +26,7 @@ to deployment in a structured engineering workflow.
 
 ## 🧠 Architecture Diagram
 
-``` mermaid
+```mermaid
 flowchart LR
     A[GitHub Push] --> B[GitHub Actions CI/CD]
     B --> C[Train.py - Model Training]
