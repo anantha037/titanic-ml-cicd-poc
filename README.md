@@ -33,7 +33,7 @@ flowchart LR
     C --> D[Versioned Model Files]
     D --> E[FastAPI Deployment]
     E --> F[Prediction API]
-    E --> G[/metrics Monitoring Endpoint]
+    E --> G[Metrics Endpoint]
 ```
 
 This diagram shows how code changes trigger CI/CD, which trains a
